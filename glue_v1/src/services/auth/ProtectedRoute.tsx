@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import { FC, ReactElement } from "react";
+import { FC, ReactElement, useEffect, useState } from "react";
 import useAuth from "./useAuth";
 
 interface childrenType {
@@ -7,9 +7,29 @@ interface childrenType {
 }
 export const ProtectedRoute: FC<childrenType> = ({ children }) => {
   const { isLoggedIn } = useAuth();
-  if (!isLoggedIn) {
+  const [redirect, setRedirect] = useState(false);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      const timer = setTimeout(() => {
+        setRedirect(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoggedIn]);
+
+  if (redirect) {
     return <Navigate to="/login" replace />;
   }
 
-  return children;
+  return isLoggedIn ? children : null;
 };
+
+// export const ProtectedRoute: FC<childrenType> = ({ children }) => {
+//   const { isLoggedIn } = useAuth();
+//   if (!isLoggedIn) {
+//     return <Navigate to="/login" replace />;
+//   }
+
+//   return children;
+// };

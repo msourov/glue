@@ -6,7 +6,7 @@ const GlueAccess = () => {
     <div className="max-w-[100%]">
       <h1 className="text-2xl font-bold mx-8 my-8">Glue Access</h1>
       <div className="flex flex-row max-w-{100%} justify-around mt-2">
-        <Box className="flex flex-col flex-1 bg-white max-w-[95%] p-6 gap-6">
+        <Box className="flex flex-col flex-1 bg-white max-w-[95%] p-8 px-10 gap-6 rounded-lg">
           <h2 className="text-xl font-bold">Book your content shoot session</h2>
           <p>
             Our content creators understand creative and culture. Create

@@ -3,7 +3,7 @@ import Dashboard from "./pages/Dashboard";
 import Members from "./pages/Members";
 import ContentCalendar from "./pages/ContentCalendar";
 import EventsCalendar from "./pages/EventsCalendar";
-import RSRFeed from "./pages/RSRFeed";
+import RSSFeed from "./pages/RSSFeed";
 import Videography from "./pages/Videography";
 import Photography from "./pages/Photography";
 import Editing from "./pages/Editing";
@@ -19,6 +19,8 @@ import { ProtectedRoute } from "./services/auth/ProtectedRoute";
 import UsefulTools from "./pages/UsefulTools";
 import Signup from "./pages/Signup";
 import ForgotPass from "./pages/ForgotPass";
+import VerifyMail from "./pages/VerifyMail";
+import UserProfile from "./pages/UserProfile";
 
 export const router = createBrowserRouter([
   {
@@ -59,10 +61,10 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "rsr-feed",
+        path: "rss-feed",
         element: (
           <ProtectedRoute>
-            <RSRFeed />
+            <RSSFeed />
           </ProtectedRoute>
         ),
       },
@@ -138,18 +140,30 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "user-profile",
+        element: (
+          <ProtectedRoute>
+            <UserProfile />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
   {
-    path: "/login",
+    path: "login",
     element: <Login />,
   },
   {
-    path: "/signup",
+    path: "verify-mail",
+    element: <VerifyMail />,
+  },
+  {
+    path: "signup",
     element: <Signup />,
   },
   {
-    path: "/forgot-password",
+    path: "forgot-password",
     element: <ForgotPass />,
   },
 ]);

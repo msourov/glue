@@ -6,7 +6,7 @@ const Photography = () => {
     <div className="max-w-[100%]">
       <h1 className="text-2xl font-bold mx-8 my-4">Home</h1>
       <div className="flex flex-row max-w-{100%} justify-evenly mt-6">
-        <Box className="flex flex-1 bg-white max-w-[45%] flex-col p-6 gap-6">
+        <Box className="flex flex-1 bg-white max-w-[45%] flex-col p-8 px-10 gap-6 rounded-lg">
           <h2 className="font-bold text-2xl">Product Photography</h2>
           <p>
             Our content creators understand creative and culture. Create
@@ -50,7 +50,7 @@ const Photography = () => {
             Get Started
           </Button>
         </Box>
-        <Box className="flex flex-1 bg-white max-w-[45%] flex-col p-6 gap-6">
+        <Box className="flex flex-1 bg-white max-w-[45%] flex-col p-8 px-10 gap-6 rounded-lg">
           <h2 className="font-bold text-2xl">Lifestyle Photography</h2>
           <p>
             Our content creators understand creative and culture. Create

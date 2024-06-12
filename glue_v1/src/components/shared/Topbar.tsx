@@ -1,11 +1,18 @@
 import { Menu, Button, rem } from "@mantine/core";
 import {
   IconSettings,
-  IconPhoto,
   IconMessageCircle,
   IconLogout,
+  IconUser,
 } from "@tabler/icons-react";
 import useAuth from "../../services/auth/useAuth";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import useLocalStorage from "../../services/hooks/useLocalStorage";
+
+interface LSData {
+  uid: string;
+}
 
 const Topbar = () => {
   return (
@@ -13,11 +20,11 @@ const Topbar = () => {
       <div>
         <img src="/static/glue.png" alt="logo" width={100} />
       </div>
-      <div className="flex gap-4 mr-4">
+      <div className="flex gap-4 mr-8">
         {/* <button>
           <IconSettings color="black" stroke={1} />
         </button> */}
-        <Demo />
+        <UserButton />
       </div>
     </div>
   );
@@ -25,25 +32,51 @@ const Topbar = () => {
 
 export default Topbar;
 
-function Demo() {
+function UserButton() {
   const { logout } = useAuth();
+  const navigate = useNavigate();
+  const [LSData] = useLocalStorage<string | Record<string, unknown>>(
+    "loggedInUser",
+    null
+  );
+  const [imageUrl, setImageUrl] = useState("");
+  const { uid } = LSData as unknown as LSData;
+  const [timestamp, setTimestamp] = useState<number>(Date.now());
+  useEffect(() => {
+    const getImage = async () => {
+      setTimestamp(Date.now());
+      setImageUrl(
+        `https://api.glue.pitetris.com/margaret/v1/user/profile/show/no/${uid}?${timestamp}`
+      );
+    };
+    getImage();
+  }, [timestamp]);
 
   return (
-    <Menu shadow="md" width={200}>
+    <Menu
+      shadow="md"
+      width={200}
+      transitionProps={{ transition: "rotate-right", duration: 150 }}
+    >
       <Menu.Target>
-        <Button bg="none">
-          <img src="/static/user.png" alt="user" width={30} />
+        <Button p={0} className="">
+          <img
+            src={imageUrl}
+            alt="user"
+            width={50}
+            height={40}
+            className="outline-black-5 overflow-hidden"
+          />
         </Button>
       </Menu.Target>
 
       <Menu.Dropdown>
         <Menu.Label>Application</Menu.Label>
         <Menu.Item
-          leftSection={
-            <IconSettings style={{ width: rem(14), height: rem(14) }} />
-          }
+          leftSection={<IconUser style={{ width: rem(14), height: rem(14) }} />}
+          onClick={() => navigate("/user-profile")}
         >
-          Settings
+          Profile
         </Menu.Item>
         <Menu.Item
           leftSection={
@@ -54,11 +87,12 @@ function Demo() {
         </Menu.Item>
         <Menu.Item
           leftSection={
-            <IconPhoto style={{ width: rem(14), height: rem(14) }} />
+            <IconSettings style={{ width: rem(14), height: rem(14) }} />
           }
         >
-          Gallery
+          Settings
         </Menu.Item>
+
         {/* <Menu.Item
           leftSection={
             <IconSearch style={{ width: rem(14), height: rem(14) }} />

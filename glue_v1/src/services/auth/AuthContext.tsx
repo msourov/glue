@@ -6,34 +6,51 @@ import {
   useMemo,
   useState,
 } from "react";
-import auth from ".";
+import Cookies from "js-cookie";
+import api from "../api";
+import { getToken } from "../utils/getToken";
+import useLocalStorage from "../hooks/useLocalStorage";
+import { isAxiosError } from "axios";
 
 interface AuthContextType {
   user: unknown;
   isLoggedIn: boolean;
   login: (data: { email: string; password: string }) => Promise<boolean>;
+  sendVerMail: (data: {
+    name: string;
+    email: string;
+  }) => Promise<SendVerMailResponse | false>;
+  signup: (data: {
+    name: string;
+    phone: string;
+    email: string;
+    password: string;
+  }) => Promise<boolean | undefined>;
   logout: () => void;
 }
+
+interface SendVerMailResponse {
+  message: string;
+  status_code: number;
+  success: boolean;
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-const getCookie = (name: string): string | null => {
-  console.log(name);
-  const value = `; ${document.cookie}`;
-  const parts: string[] = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop()?.split(";").shift() ?? null;
-  return null;
-};
-
 export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [ ,setLSData, clearLSData] = useLocalStorage<
+    string | Record<string, unknown>
+  >("loggedInUser", null);
   const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const token = getCookie("authToken");
+    const token = getToken();
     if (token) {
       setIsLoggedIn(true);
     }
@@ -41,10 +58,10 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (data: { email: string; password: string }) => {
     try {
-      const res = await auth().post("/margaret/v1/user/signin", data);
-      console.log(res.data);
+      const res = await api().post("/margaret/v1/user/signin", data);
       setUser(res.data);
-      document.cookie = `authToken=${res.data.access_token}; path=/; secure: HttpOnly;`;
+      setLSData(res.data);
+      Cookies.set("token", res.data.access_token, { expires: 7 });
       setIsLoggedIn(true);
       return true;
     } catch (error) {
@@ -54,9 +71,50 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = () => {
-    setUser(null);
+    clearLSData();
     setIsLoggedIn(false);
-    document.cookie = "authToken=; max-age=0; path=/";
+    Cookies.remove("token");
+  };
+
+  const sendVerMail = async ({
+    name,
+    email,
+  }: {
+    name: string;
+    email: string;
+  }) => {
+    try {
+      const res = await api().post("/margaret/v1/user/send/link", {
+        name,
+        email,
+      });
+      console.log("sendVerMail", res);
+      if (res.data.success) {
+        return res.data;
+      }
+    } catch (error) {
+      if (isAxiosError(error)) {
+        console.log(error.response?.data?.message);
+      }
+      return false;
+    }
+  };
+
+  const signup = async (data: {
+    name: string;
+    email: string;
+    phone: string;
+    password: string;
+  }) => {
+    try {
+      const res = await api().post("/margaret/v1/user/signup", data);
+      if (res.status === 201) {
+        return true;
+      }
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
   };
 
   const value = useMemo(
@@ -64,6 +122,8 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       user,
       isLoggedIn,
       login,
+      sendVerMail,
+      signup,
       logout,
     }),
     [user, isLoggedIn]

@@ -61,14 +61,15 @@ export default function Login() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <TextInput
             label="Email"
-            placeholder="you@mantine.dev"
+            placeholder="user@gmail.com"
             required
             {...register("email")}
             error={errors.email ? errors.email.message : null}
           />
+
           <PasswordInput
             label="Password"
-            placeholder="Your password"
+            placeholder="password"
             required
             mt="md"
             {...register("password")}

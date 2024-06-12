@@ -15,7 +15,8 @@ import {
   IconUsersGroup,
 } from "@tabler/icons-react";
 import classes from "./NavbarLinksGroup.module.css";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 interface IconProps {
   // Add specific prop types here based on the Icon component's documentation
@@ -26,17 +27,23 @@ interface LinksGroupProps {
   key: string;
   icon: React.FC<IconProps>;
   label: string;
+  isActive: boolean;
   link?: string;
+  onClick: () => void;
 }
 
-export function LinksGroup({ icon: Icon, label, link }: LinksGroupProps) {
+export function LinksGroup({
+  icon: Icon,
+  label,
+  link,
+}: LinksGroupProps & { isActive: boolean; onClick: () => void }) {
   const navigate = useNavigate();
   const handleClick: () => void = () => {
-    // Specify function type with void return
     if (link) {
       navigate(link);
     }
   };
+  // console.log(activeLink);
   return (
     <>
       <UnstyledButton className={classes.control} onClick={handleClick}>
@@ -74,7 +81,7 @@ const mockdata = [
         icon: IconCalendarEvent,
         link: "/events-calendar",
       },
-      { label: "RSR Feed", icon: IconRss, link: "/rsr-feed" },
+      { label: "RSS Feed", icon: IconRss, link: "/rss-feed" },
     ],
   },
   {
@@ -127,6 +134,15 @@ interface Group {
   };
 }
 export function Sidebar() {
+  const [activeLink, setActiveLink] = useState<string | null>(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    const currentPath = location.pathname;
+
+    setActiveLink(currentPath);
+  }, [location]);
+  console.log(activeLink);
   return (
     <Box mih={220} p="lg" m="0">
       {mockdata.map((group, index) => (
@@ -139,7 +155,9 @@ export function Sidebar() {
               key={item.label}
               icon={item.icon}
               label={item.label}
+              isActive={activeLink === item.link}
               link={item.link}
+              onClick={() => setActiveLink(item.link)}
             />
           ))}
         </div>
