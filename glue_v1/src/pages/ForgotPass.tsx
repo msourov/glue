@@ -24,7 +24,6 @@ const ForgotPass = () => {
   });
 
   const handleForgotPass = async ({ email }: UserEmail) => {
-    console.log("values", email);
     try {
       await api().post("/margaret/v1/user/forget-send/link", { email: email });
       // navigate("/login", { replace: true });

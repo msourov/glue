@@ -16,36 +16,37 @@ import * as Yup from "yup";
 import useAuth from "../services/auth/useAuth";
 import useLocalStorage from "../services/hooks/useLocalStorage";
 import api from "../services/api";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const validationSchema = Yup.object().shape({
   name: Yup.string()
     .min(2, "Name must be at least 2 characters")
     .required("Name is required"),
-  phone: Yup.string()
-    .matches(/^\+?0?\d{1,14}$/, "Phone number is not valid")
-    .required("Phone number is required"),
   email: Yup.string()
     .email("Invalid email address")
     .required("Email is required"),
   password: Yup.string()
     .min(4, "Password must be at least 4 characters")
     .required("Password is required"),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password"), undefined], "Passwords do not match")
+    .required("Confirm Password is required"),
 });
 
 type FormDataType = {
   name: string;
-  phone: string;
   email: string;
   password: string;
+  confirmPassword: string;
 };
 
 const Signup = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [, setLSData, clearLSData] = useLocalStorage<
+  const [LSData, setLSData, clearLSData] = useLocalStorage<
     string | Record<string, unknown>
   >("userSignupData", null);
+  const [isVerified, setIsVerified] = useState<boolean>(false);
   const { signup, sendVerMail, isLoggedIn } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const navigate = useNavigate();
   const {
     register,
@@ -54,7 +55,7 @@ const Signup = () => {
   } = useForm<FormDataType>({
     resolver: yupResolver(validationSchema),
   });
-
+  console.log(LSData);
   let interval: number;
   useEffect(() => {
     if (isLoggedIn) {
@@ -63,19 +64,21 @@ const Signup = () => {
   }, []);
 
   const onSubmit = async (data: FormDataType) => {
+    if (isSubmitting) return; // Prevent multiple submissions
+    setIsSubmitting(true);
     setLSData(data);
-    if (await sendVerMail(data)) {
+    const verMailSuccess = await sendVerMail(data);
+
+    if (verMailSuccess) {
       navigate("/verify-mail");
-      let isVerified = false;
 
       const timer = setTimeout(async () => {
         if (!isVerified) {
-          await clearLSData();
+          clearLSData();
           navigate("/signup");
           clearInterval(interval);
         }
-        clearInterval(interval);
-      }, 120000);
+      }, 300000);
 
       const checkVerificationStatus = async () => {
         const verStatusRes = await api().get(
@@ -88,11 +91,10 @@ const Signup = () => {
           clearInterval(interval);
           const response = await signup(data);
           if (response) {
-            console.log("signup succcessful");
-            isVerified = true;
+            console.log("signup succcessful", response);
+            setIsVerified(true);
             navigate("/login", { replace: true });
           }
-          navigate("/login", { replace: true });
         } else {
           navigate("/signup");
         }
@@ -101,6 +103,8 @@ const Signup = () => {
       checkVerificationStatus();
       interval = setInterval(checkVerificationStatus, 5000);
       return () => clearInterval(interval);
+    } else {
+      setIsSubmitting(false); // Reset the flag if there's an error
     }
   };
 
@@ -108,25 +112,21 @@ const Signup = () => {
     <Container size={420} my={80} className="text-sm">
       <Image radius="xs" src="/static/glue.png" w={100} className="mx-auto" />
       <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <p className="font-bold text-lg">Create a new account</p>
+        <form onSubmit={handleSubmit(onSubmit)} autoComplete="off">
           <TextInput
-            label="name"
+            label="Full Name"
             placeholder="Your name"
             required
+            mt="md"
             {...register("name")}
             error={errors.name ? errors.name.message : null}
           />
           <TextInput
-            label="phone"
-            placeholder="123-45-678"
-            required
-            {...register("phone")}
-            error={errors.phone ? errors.phone.message : null}
-          />
-          <TextInput
-            label="Email"
+            label="Email Address"
             placeholder="user@google.com"
             required
+            mt="md"
             {...register("email")}
             error={errors.email ? errors.email.message : null}
           />
@@ -138,8 +138,20 @@ const Signup = () => {
             {...register("password")}
             error={errors.password ? errors.password.message : null}
           />
-          <Group justify="space-between" mt="xs"></Group>
-          <Button fullWidth mt="xl" bg="black" type="submit">
+          <PasswordInput
+            label="Confirm Password"
+            placeholder="password"
+            required
+            mt="md"
+            {...register("confirmPassword")}
+            error={
+              errors.confirmPassword ? errors.confirmPassword.message : null
+            }
+          />
+          <Group justify="space-between" mt="lg">
+            By signing up you agree that Glue can send you marketing emails
+          </Group>
+          <Button fullWidth bg="black" mt="lg" type="submit">
             Sign up
           </Button>
           <Text c="dimmed" size="sm" ta="center" mt={20}>

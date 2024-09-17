@@ -9,7 +9,7 @@ import Photography from "./pages/Photography";
 import Editing from "./pages/Editing";
 import GlueAccess from "./pages/GlueAccess";
 import Chat from "./pages/Chat";
-import CoolContent from "./pages/CoolContent";
+import CoolContent from "./pages/ContentDrive";
 import Events from "./pages/Events";
 import MyMembership from "./pages/MyMembership";
 import ErrorPage from "./pages/ErrorPage";
@@ -21,6 +21,8 @@ import Signup from "./pages/Signup";
 import ForgotPass from "./pages/ForgotPass";
 import VerifyMail from "./pages/VerifyMail";
 import UserProfile from "./pages/UserProfile";
+import ContentDrive from "./pages/ContentDrive";
+import Settings from "./pages/Settings";
 
 export const router = createBrowserRouter([
   {
@@ -65,6 +67,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <RSSFeed />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "content-drive",
+        element: (
+          <ProtectedRoute>
+            <ContentDrive />
           </ProtectedRoute>
         ),
       },
@@ -145,6 +155,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <UserProfile />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "settings",
+        element: (
+          <ProtectedRoute>
+            <Settings />
           </ProtectedRoute>
         ),
       },

@@ -3,7 +3,7 @@ import { createTheme, MantineProvider } from "@mantine/core";
 import "./App.css";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./Routes";
-import { AuthProvider } from "./services/auth/AuthContext";
+import { AuthProvider } from "./services/auth/AuthContext_MAIN";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();

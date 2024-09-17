@@ -11,10 +11,10 @@ export const ProtectedRoute: FC<childrenType> = ({ children }) => {
 
   useEffect(() => {
     if (!isLoggedIn) {
-      const timer = setTimeout(() => {
-        setRedirect(true);
-      }, 500);
-      return () => clearTimeout(timer);
+      // const timer = setTimeout(() => {
+      setRedirect(true);
+      // }, 0);
+      return;
     }
   }, [isLoggedIn]);
 

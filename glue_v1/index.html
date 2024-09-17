@@ -1,8 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script>
+      (function (w, d, s, o, f, js, fjs) {
+        w["circleWidget"] = o;
+        w[o] =
+          w[o] ||
+          function () {
+            (w[o].q = w[o].q || []).push(arguments);
+          };
+        (js = d.createElement(s)), (fjs = d.getElementsByTagName(s)[0]);
+        js.id = o;
+        js.src = f;
+        js.async = 1;
+        fjs.parentNode.insertBefore(js, fjs);
+      })(
+        window,
+        document,
+        "script",
+        "mw",
+        "https://mahmuds-community-085247.circle.so/external/widget.js"
+      );
+
+      mw("init", {
+        community_public_uid: "6ab342c8",
+        brand_color_dark: "#506CF0",
+        brand_color_light: "#506CF0",
+        default_appearance: "light",
+      });
+
+      // Optional: pass in a default space slug and/or post slug
+      // mw('setDefaults', {
+      //   space_slug: '',
+      //   post_slug: ''
+      // });
+    </script>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/static/glue.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Glue</title>
   </head>

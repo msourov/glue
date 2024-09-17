@@ -16,7 +16,7 @@ const VerifyMail: React.FC = () => {
         </Title>
         <Text size="md" style={{ marginBottom: 20 }}>
           We have sent a verification link to your email address that will
-          expire after two minutes. Please check your inbox and click on the
+          expire after five minutes. Please check your inbox and click on the
           link to verify your email and complete your signup process.
         </Text>
         {/* <Button

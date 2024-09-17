@@ -13,7 +13,6 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 import useAuth from "../services/auth/useAuth";
 
 const validationSchema = Yup.object().shape({
@@ -31,7 +30,7 @@ type FormDataType = {
 };
 
 export default function Login() {
-  const { login, isLoggedIn } = useAuth();
+  const { loginWithAuth0, isLoggedIn } = useAuth();
   const navigate = useNavigate();
   const {
     register,
@@ -42,25 +41,25 @@ export default function Login() {
   });
 
   const onSubmit = async (data: FormDataType) => {
-    const isLoggedIn = await login(data);
+    const isLoggedIn = await loginWithAuth0(data);
     if (isLoggedIn) {
       navigate("/", { replace: true });
     }
   };
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      navigate("/", { replace: true });
-    }
-  }, [isLoggedIn, navigate]);
+  if (isLoggedIn) {
+    navigate("/", { replace: true });
+    return null; // Prevent rendering of the form
+  }
 
   return (
     <Container size={420} my={80} className="text-sm">
       <Image radius="xs" src="/static/glue.png" w={100} className="mx-auto" />
       <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+        <p className="font-bold text-lg mb-6">Login to your account</p>
         <form onSubmit={handleSubmit(onSubmit)}>
           <TextInput
-            label="Email"
+            label="Email Address"
             placeholder="user@gmail.com"
             required
             {...register("email")}
@@ -86,7 +85,7 @@ export default function Login() {
               Forgot password?
             </Anchor>
           </Group>
-          <Button fullWidth mt="xl" bg="black" type="submit">
+          <Button fullWidth mt="lg" bg="black" type="submit">
             Sign in
           </Button>
           <Text c="dimmed" size="sm" ta="center" mt={20}>

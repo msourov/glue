@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-import createApiClient from "../services/api";
-import { Box, Card, Text, Skeleton, ScrollArea } from "@mantine/core";
+import { Box, Card, ScrollArea, Skeleton, Text } from "@mantine/core";
+import api from "../services/api";
+import { useEffect, useState } from "react";
 
 interface FeedItem {
   time: number;
@@ -16,6 +16,7 @@ interface FeedItem {
   title: string;
   uid: string;
   update_at: string;
+  is_featured: boolean;
 }
 
 interface FetchedFeed {
@@ -24,58 +25,24 @@ interface FetchedFeed {
   };
 }
 
-const getRssFeedData = async (): Promise<FetchedFeed> => {
-  try {
-    const response = await createApiClient().get<FetchedFeed>(
-      "margaret/v1/rss_feed/all"
-    );
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    return { data: { data: [] } };
-  }
-};
-
 const RSSFeed = () => {
-  const { data: fetchedFeed, isLoading } = useQuery<FetchedFeed, Error>({
-    queryFn: getRssFeedData,
-    queryKey: ["fetchedFeed"],
-  });
+  const [rssfeedData, setRssfeedData] = useState<FeedItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    const getRssFeedData = async (): Promise<FetchedFeed> => {
+      try {
+        const response = await api().get("margaret/v1/rss_feed/all");
+        setRssfeedData(response.data.data);
+        setIsLoading(false);
+        return response.data;
+      } catch (error) {
+        console.error(error);
+        return { data: { data: [] } };
+      }
+    };
+    getRssFeedData();
+  }, []);
 
-  return (
-    <div className="max-w-[100%]">
-      {/* <h1 className="text-2xl font-bold mx-8 my-4">RSS Feed</h1> */}
-      <div className="flex flex-row max-w-{100%} justify-around mt-8">
-        <Box className="flex flex-1 bg-white max-w-[65%] flex-col px-4 py-2 rounded-lg">
-          <h2 className="font-medium text-xl mt-4 mx-2">Featured articles</h2>
-          <ScrollArea
-            style={{ height: "calc(95vh - 150px)", marginTop: "0.75rem" }}
-          >
-            {isLoading ? (
-              Array.from({ length: 5 }).map((_, index) => (
-                <SkeletonCard key={index} />
-              ))
-            ) : (
-              <FeedCard data={fetchedFeed?.data.data || []} />
-            )}
-          </ScrollArea>
-        </Box>
-        <Box className="flex flex-1 bg-white max-w-[25%] p-6 rounded-lg">
-          <h1 className="text-xl font-bold">Upcoming Events</h1>
-        </Box>
-      </div>
-    </div>
-  );
-};
-
-export default RSSFeed;
-
-interface FeedCardProps {
-  data: FeedItem[];
-}
-
-const FeedCard = ({ data }: FeedCardProps) => {
-  console.log("data", data);
   const truncateText = (text: string, maxLength: number) => {
     if (text.length > maxLength) {
       return text.substring(0, maxLength) + "...";
@@ -84,48 +51,108 @@ const FeedCard = ({ data }: FeedCardProps) => {
     return truncated.substring(0, truncated.lastIndexOf(" ")) + "...";
   };
 
-  return (
-    <>
-      {data &&
-        data.map((item: FeedItem) => (
-          <Card
-            shadow="sm"
-            padding="xl"
-            component="a"
-            href={item?.link}
-            target="_blank"
-            className="flex flex-row mb-4"
-            key={item.id}
-          >
-            <img
-              src={`https://api.glue.pitetris.com/margaret/v1/rss_feed/show/no/${item?.uid}`}
-              alt="No way!"
-              className="w-[180px] h-[140px] my-auto"
-            />
+  const featuredArticles = rssfeedData.filter((item) => item.is_featured);
+  const normalArticles = rssfeedData.filter((item) => !item.is_featured);
 
-            <div className="mx-8 align-top">
-              <Text fw={600} size="lg" mt="md">
-                {item?.title}
-              </Text>
-              <Text c="dimmed">
-                {item?.category} <span className="font-bold mx-2">.</span>{" "}
-                {item?.time} minutes read
-              </Text>
-              <Text mt="xs" c="dimmed" size="sm">
-                {truncateText(item?.description, 180)}{" "}
-                <span className="italic">read more</span>
-              </Text>
-            </div>
-          </Card>
-        ))}
-    </>
+  return (
+    <div className="max-w-[100%] mx-8">
+      <ScrollArea style={{ height: "calc(95vh - 80px)", marginTop: "0.75rem" }}>
+        <div className="my-4">
+          <h1 className="text-3xl font-bold">Cool Content</h1>
+          <p className="text-gray-500">
+            Articles to get more business knowledge
+          </p>
+        </div>
+        <h1 className="font-medium text-2xl mt-6">Featured articles</h1>
+
+        <div className="flex flex-row max-w-[100%] gap-4">
+          {isLoading ? (
+            Array.from({ length: 1 }).map((_, index) => (
+              <SkeletonCard key={index} />
+            ))
+          ) : featuredArticles.length > 0 ? ( // Check if there are featured articles
+            <Box className="rounded-2xl mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+              {featuredArticles.map((item: FeedItem) => (
+                <Card
+                  padding="md"
+                  component="a"
+                  href={item?.link}
+                  target="_blank"
+                  className="flex lg:flex-col xl:flex-row rounded-xl md:items-center lg:px-2"
+                  key={item.id}
+                >
+                  <img
+                    src={`https://api.glue.pitetris.com/margaret/v1/rss_feed/show/no/${item?.uid}`}
+                    alt="No way!"
+                    className="w-[60%] h-[140px] my-auto md:w-[70%]"
+                  />
+
+                  <div className="mx-8 align-top">
+                    <Text fw={600} size="lg" mt="md">
+                      {item?.title}
+                    </Text>
+                    <Text c="dimmed">
+                      {item?.category} <span className="font-bold mx-2">.</span>{" "}
+                      {item?.time} minutes read
+                    </Text>
+                    <Text mt="xs" c="dimmed" size="sm">
+                      {truncateText(item?.description, 180)}{" "}
+                      <span className="italic">read more</span>
+                    </Text>
+                  </div>
+                </Card>
+              ))}
+            </Box>
+          ) : (
+            <Text>No featured articles available.</Text>
+          )}
+        </div>
+        <h1 className="font-medium text-2xl mt-6 ">Recent articles</h1>
+
+        <Box className="rounded-2xl mt-4 grid grid-cols-1 md:grid-cols-2 ">
+          {normalArticles &&
+            normalArticles.map((item: FeedItem) => (
+              <Card
+                padding="md"
+                component="a"
+                href={item?.link}
+                target="_blank"
+                className="lg:flex-col xl:flex-row border border-gray-200 md:items-center lg:px-2"
+                key={item.id}
+              >
+                <img
+                  src={`https://api.glue.pitetris.com/margaret/v1/rss_feed/show/no/${item?.uid}`}
+                  alt="No way!"
+                  className="w-[60%] h-[140px] md:w-[70%]"
+                />
+
+                <div className="mx-8 align-top">
+                  <Text fw={600} size="lg" mt="md">
+                    {item?.title}
+                  </Text>
+                  <Text c="dimmed">
+                    {item?.category} <span className="font-bold mx-2">.</span>{" "}
+                    {item?.time} minutes read
+                  </Text>
+                  <Text mt="xs" c="dimmed" size="sm">
+                    {truncateText(item?.description, 180)}{" "}
+                    <span className="italic">read more</span>
+                  </Text>
+                </div>
+              </Card>
+            ))}
+        </Box>
+      </ScrollArea>
+    </div>
   );
 };
+
+export default RSSFeed;
 
 const SkeletonCard = () => {
   return (
     <Card shadow="sm" padding="lg" className="flex flex-row mb-4">
-      <Skeleton height={150} width={150} />
+      <Skeleton height={150} width={"80vw"} />
       <Box
         style={{
           marginLeft: "16px",
