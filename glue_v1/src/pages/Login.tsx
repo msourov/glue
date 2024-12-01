@@ -30,7 +30,7 @@ type FormDataType = {
 };
 
 export default function Login() {
-  const { loginWithAuth0, isLoggedIn } = useAuth();
+  const { login, isLoggedIn } = useAuth();
   const navigate = useNavigate();
   const {
     register,
@@ -41,7 +41,7 @@ export default function Login() {
   });
 
   const onSubmit = async (data: FormDataType) => {
-    const isLoggedIn = await loginWithAuth0(data);
+    const isLoggedIn = await login(data);
     if (isLoggedIn) {
       navigate("/", { replace: true });
     }
