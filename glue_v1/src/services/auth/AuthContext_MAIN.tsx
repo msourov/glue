@@ -13,7 +13,7 @@ import useLocalStorage from "../hooks/useLocalStorage";
 import { isAxiosError } from "axios";
 
 interface AuthContextType {
-  // user: unknown;
+  user: unknown;
   isLoggedIn: boolean;
   login: (data: { email: string; password: string }) => Promise<boolean>;
   sendVerMail: (data: {
@@ -46,7 +46,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [, setLSData, clearLSData] = useLocalStorage<
     string | Record<string, unknown>
   >("loggedInUser", null);
-  // const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -56,52 +56,10 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     }
   }, []);
 
-  // const login = async (data: { email: string; password: string }) => {
-  //   try {
-  //     const res = await api().post("/margaret/v1/user/signin", data);
-  //     setUser(res.data);
-  //     setLSData(res.data);
-  //     Cookies.set("token", res.data.access_token, { expires: 7 });
-  //     setIsLoggedIn(true);
-  //     return true;
-  //   } catch (error) {
-  //     console.error(error);
-  //     return false;
-  //   }
-  // };
-
-  // const loginWithAuth0 = async (data: {
-  //   email: string;
-  //   password: string;
-  // }): Promise<boolean> => {
-  //   try {
-  //     const res = await api().post("/margaret/v1/user/oauth-signin", {
-  //       client_id: import.meta.env.VITE_APP_AUTH0_CLIENT_ID,
-  //       client_secret: import.meta.env.VITE_APP_AUTH0_CLIENT_SECRET,
-  //       grant_type: "authorization_code",
-  //       username: data.email,
-  //       password: data.password,
-  //       scope: "openid profile email",
-  //     });
-  //     const result = res.data;
-  //     console.log("result", result);
-  //     if (res.status === 200) {
-  //       setIsLoggedIn(true);
-  //       setLSData(result.user); // Store user data as needed
-  //       Cookies.set("token", result.access_token, { expires: 7 }); // Save access token for later use
-  //       return true;
-  //     } else {
-  //       console.error("Login failed:", result);
-  //       return false;
-  //     }
-  //   } catch (error) {
-  //     console.error("Login error:", error);
-  //     return false;
-  //   }
-  // };
   const login = async (data: { email: string; password: string }) => {
     try {
       const res = await api().post("/margaret/v1/user/signin", data);
+      setUser(res.data);
       setLSData(res.data);
       Cookies.set("token", res.data.access_token, { expires: 7 });
       setIsLoggedIn(true);
@@ -165,15 +123,14 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
   const value = useMemo(
     () => ({
-      // user,
+      user,
       isLoggedIn,
       login,
-      // loginWithAuth0,
       sendVerMail,
       signup,
       logout,
     }),
-    [isLoggedIn]
+    [user, isLoggedIn]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

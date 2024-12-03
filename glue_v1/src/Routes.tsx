@@ -3,13 +3,13 @@ import Dashboard from "./pages/Dashboard";
 import Members from "./pages/Members";
 import ContentCalendar from "./pages/ContentCalendar";
 import EventsCalendar from "./pages/EventsCalendar";
-import RSRFeed from "./pages/RSRFeed";
+import RSSFeed from "./pages/RSSFeed";
 import Videography from "./pages/Videography";
 import Photography from "./pages/Photography";
 import Editing from "./pages/Editing";
 import GlueAccess from "./pages/GlueAccess";
 import Chat from "./pages/Chat";
-import CoolContent from "./pages/CoolContent";
+import CoolContent from "./pages/ContentDrive";
 import Events from "./pages/Events";
 import MyMembership from "./pages/MyMembership";
 import ErrorPage from "./pages/ErrorPage";
@@ -19,6 +19,10 @@ import { ProtectedRoute } from "./services/auth/ProtectedRoute";
 import UsefulTools from "./pages/UsefulTools";
 import Signup from "./pages/Signup";
 import ForgotPass from "./pages/ForgotPass";
+import VerifyMail from "./pages/VerifyMail";
+import UserProfile from "./pages/UserProfile";
+import ContentDrive from "./pages/ContentDrive";
+import Settings from "./pages/Settings";
 
 export const router = createBrowserRouter([
   {
@@ -59,10 +63,18 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "rsr-feed",
+        path: "rss-feed",
         element: (
           <ProtectedRoute>
-            <RSRFeed />
+            <RSSFeed />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "content-drive",
+        element: (
+          <ProtectedRoute>
+            <ContentDrive />
           </ProtectedRoute>
         ),
       },
@@ -138,18 +150,38 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "user-profile",
+        element: (
+          <ProtectedRoute>
+            <UserProfile />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "settings",
+        element: (
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
   {
-    path: "/login",
+    path: "login",
     element: <Login />,
   },
   {
-    path: "/signup",
+    path: "verify-mail",
+    element: <VerifyMail />,
+  },
+  {
+    path: "signup",
     element: <Signup />,
   },
   {
-    path: "/forgot-password",
+    path: "forgot-password",
     element: <ForgotPass />,
   },
 ]);

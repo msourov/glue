@@ -1,5 +1,13 @@
-import { Group, Box, ThemeIcon, Text, UnstyledButton } from "@mantine/core";
 import {
+  Group,
+  Box,
+  ThemeIcon,
+  Text,
+  UnstyledButton,
+  Divider,
+} from "@mantine/core";
+import {
+  IconBrandOnedrive,
   IconBrandYoutubeFilled,
   IconCalendarEvent,
   IconCalendarFilled,
@@ -8,14 +16,13 @@ import {
   IconMessageFilled,
   IconRss,
   IconSectionFilled,
-  IconSettingsFilled,
   IconSunglassesFilled,
-  IconTimelineEventFilled,
-  IconUserFilled,
   IconUsersGroup,
 } from "@tabler/icons-react";
 import classes from "./NavbarLinksGroup.module.css";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { ProfileSection } from "../../../pages/ProfileSection";
 
 interface IconProps {
   // Add specific prop types here based on the Icon component's documentation
@@ -26,20 +33,32 @@ interface LinksGroupProps {
   key: string;
   icon: React.FC<IconProps>;
   label: string;
+  isActive: boolean;
   link?: string;
+  onClick: () => void;
 }
 
-export function LinksGroup({ icon: Icon, label, link }: LinksGroupProps) {
+export function LinksGroup({
+  icon: Icon,
+  label,
+  isActive,
+  onClick,
+  link,
+}: LinksGroupProps & { isActive: boolean; onClick: () => void }) {
   const navigate = useNavigate();
   const handleClick: () => void = () => {
-    // Specify function type with void return
     if (link) {
       navigate(link);
     }
+    onClick();
   };
+  // console.log(activeLink);
   return (
     <>
-      <UnstyledButton className={classes.control} onClick={handleClick}>
+      <UnstyledButton
+        className={`${classes.control} ${isActive ? classes.active : ""}`}
+        onClick={handleClick}
+      >
         <Group justify="space-between" gap={0}>
           <Box style={{ display: "flex", alignItems: "center" }}>
             <ThemeIcon size={30} className="bg-white text-black">
@@ -74,7 +93,12 @@ const mockdata = [
         icon: IconCalendarEvent,
         link: "/events-calendar",
       },
-      { label: "RSR Feed", icon: IconRss, link: "/rsr-feed" },
+      { label: "RSS Feed", icon: IconRss, link: "/rss-feed" },
+      {
+        label: "Your Content Drive",
+        icon: IconBrandOnedrive,
+        link: "/content-drive",
+      },
     ],
   },
   {
@@ -98,22 +122,22 @@ const mockdata = [
     title: "Community",
     items: [
       { label: "Chat", icon: IconMessageFilled, link: "/Chat" },
-      {
-        label: "Cool Content",
-        icon: IconBrandYoutubeFilled,
-        link: "/cool-content",
-      },
-      { label: "Events", icon: IconTimelineEventFilled, link: "/events" },
-      {
-        label: "My Membership",
-        icon: IconUserFilled,
-        link: "/my-membership",
-      },
-      {
-        label: "Useful Tools",
-        icon: IconSettingsFilled,
-        link: "/useful-tools",
-      },
+      // {
+      //   label: "Cool Content",
+      //   icon: IconBrandYoutubeFilled,
+      //   link: "/cool-content",
+      // },
+      // // { label: "Events", icon: IconTimelineEventFilled, link: "/events" },
+      // {
+      //   label: "My Membership",
+      //   icon: IconUserFilled,
+      //   link: "/my-membership",
+      // },
+      // {
+      //   label: "Useful Tools",
+      //   icon: IconSettingsFilled,
+      //   link: "/useful-tools",
+      // },
     ],
   },
 ];
@@ -127,23 +151,46 @@ interface Group {
   };
 }
 export function Sidebar() {
+  const [activeLink, setActiveLink] = useState<string | null>(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    const currentPath = location.pathname;
+
+    setActiveLink(currentPath);
+  }, [location]);
+  console.log(activeLink);
   return (
-    <Box mih={220} p="lg" m="0">
-      {mockdata.map((group, index) => (
-        <div key={index}>
-          {group.title && (
-            <Text className={classes.groupTitle}>{group.title}</Text>
-          )}
-          {group.items.map((item) => (
-            <LinksGroup
-              key={item.label}
-              icon={item.icon}
-              label={item.label}
-              link={item.link}
-            />
-          ))}
-        </div>
-      ))}
+    <Box px="lg" py="md" m="0" className="overflow-y-auto h-full flex flex-col">
+      <Box className="flex-grow">
+        {mockdata.map((group, index) => (
+          <div key={index} className="mb-4">
+            {group.title && (
+              <Text className="font-bold text-gray-600 mb-2">
+                {group.title}
+              </Text>
+            )}
+            {group.items.map((item) => (
+              <LinksGroup
+                key={item.label}
+                icon={item.icon}
+                label={item.label}
+                isActive={activeLink === item.link}
+                link={item.link}
+                onClick={() => {
+                  if (item.link) {
+                    setActiveLink(item.link);
+                  }
+                }}
+              />
+            ))}
+          </div>
+        ))}
+      </Box>
+      <Divider />
+      <Box className="mb-14">
+        <ProfileSection />
+      </Box>
     </Box>
   );
 }
