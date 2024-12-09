@@ -6,15 +6,14 @@ import {
   useMemo,
   useState,
 } from "react";
-import Cookies from "js-cookie";
 import api from "../api";
-import { getToken } from "../utils/getToken";
+import { getToken, removeToken, setToken } from "../utils/getToken";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { isAxiosError } from "axios";
 
 interface AuthContextType {
   // user: unknown;
-  isLoggedIn: boolean;
+  isAuthenticated: boolean;
   login: (data: { email: string; password: string }) => Promise<boolean>;
   sendVerMail: (data: {
     name: string;
@@ -42,33 +41,31 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [, setLSData, clearLSData] = useLocalStorage<
     string | Record<string, unknown>
   >("loggedInUser", null);
   // const [user, setUser] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const token = getToken();
     if (token) {
-      setIsLoggedIn(true);
+      setIsAuthenticated(true);
     }
   }, []);
 
-  // const login = async (data: { email: string; password: string }) => {
-  //   try {
-  //     const res = await api().post("/margaret/v1/user/signin", data);
-  //     setUser(res.data);
-  //     setLSData(res.data);
-  //     Cookies.set("token", res.data.access_token, { expires: 7 });
-  //     setIsLoggedIn(true);
-  //     return true;
-  //   } catch (error) {
-  //     console.error(error);
-  //     return false;
-  //   }
-  // };
+  const login = async (data: { email: string; password: string }) => {
+    try {
+      const res = await api().post("/margaret/v1/user/signin", data);
+      setLSData(res.data);
+      setToken(res.data.access_token);
+      setIsAuthenticated(true);
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  };
 
   // const loginWithAuth0 = async (data: {
   //   email: string;
@@ -86,7 +83,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   //     const result = res.data;
   //     console.log("result", result);
   //     if (res.status === 200) {
-  //       setIsLoggedIn(true);
+  //       setIsAuthenticated(true);
   //       setLSData(result.user); // Store user data as needed
   //       Cookies.set("token", result.access_token, { expires: 7 }); // Save access token for later use
   //       return true;
@@ -99,23 +96,11 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   //     return false;
   //   }
   // };
-  const login = async (data: { email: string; password: string }) => {
-    try {
-      const res = await api().post("/margaret/v1/user/signin", data);
-      setLSData(res.data);
-      Cookies.set("token", res.data.access_token, { expires: 7 });
-      setIsLoggedIn(true);
-      return true;
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
-  };
 
   const logout = () => {
     clearLSData();
-    setIsLoggedIn(false);
-    Cookies.remove("token");
+    setIsAuthenticated(false);
+    removeToken();
   };
 
   const sendVerMail = async ({
@@ -166,14 +151,14 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const value = useMemo(
     () => ({
       // user,
-      isLoggedIn,
+      isAuthenticated,
       login,
       // loginWithAuth0,
       sendVerMail,
       signup,
       logout,
     }),
-    [isLoggedIn]
+    [isAuthenticated]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

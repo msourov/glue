@@ -1,14 +1,17 @@
-import { Box, Button, Divider } from "@mantine/core";
+import { Box, Button, Divider, Title } from "@mantine/core";
 import { IconCheck, IconCurrencyPound } from "@tabler/icons-react";
+import Videos from "../../components/FileRender/Videos";
 
 const Videography = () => {
   return (
-    <div className="max-w-[100%]">
-      <h1 className="text-3xl font-bold mx-4 sm:mx-8 my-4">Videography</h1>
-      <div className="flex flex-row max-w-[100%] justify-evenly mt-4">
-        <Box className="flex flex-1  max-w-[70%] flex-col p-2 rounded-xl">
+    <div className="mx-4 mt-4 w-full">
+      <Title order={2} c="dimmed" className="border-b-2 border-black p-1 mb-6">
+        Videography
+      </Title>
+      <div className="flex flex-wrap justify-evenly w-[95%] mx-auto">
+        <Box className="flex flex-col w-[70%] p-2 rounded-xl">
           <h2 className="font-medium text-2xl">Content shoot session</h2>
-          <Box className="flex flex-wrap  mt-4 bg-white p-4 rounded-xl">
+          <Box className="flex flex-wrap mt-4 bg-white p-4 rounded-xl">
             <p>
               Our content creators understand creative and culture. Create
               engaging videos with us that will resonate with your audience and
@@ -47,32 +50,40 @@ const Videography = () => {
               </li>
             </p>
           </Box>
-          <Box className="bg-white py-6 px-4 rounded-xl">
-            <h1 className="text-lg font-semibold">Recent Work</h1>
+          <Box className="bg-white py-6 rounded-xl overflow-x-hidden">
+            <h1 className="text-lg font-semibold mx-6">Recent Work</h1>
+            <Videos title="" />
           </Box>
         </Box>
-        <Box className="flex max-w-[40%] p-2 rounded-xl flex-col">
+        <Box className="flex w-[25%] p-2 rounded-xl flex-col">
           <h1 className="font-medium text-2xl">Book the service</h1>
-          <Box className="py-4 px-6 bg-white rounded-xl mt-4">
-            <h1 className="font-bold">Ultra member</h1>
-            <div className="flex text-2xl items-center font-bold">
-              <div className="font-extrabold">
-                <IconCurrencyPound stroke-width="3" className="mx-[-4px]" />
+          <Box className="bg-white rounded-xl mt-4">
+            <Box
+              style={{
+                background: "linear-gradient(90deg, #fcd34d, #fbbf24, #d97706)",
+                // borderRadius: "12px",
+                color: "black",
+                padding: "1rem 1.5rem",
+                boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <h1 className="font-bold">Ultra member</h1>
+              <div className="flex text-2xl items-center font-bold">
+                <div className="font-extrabold">
+                  <IconCurrencyPound strokeWidth="3" className="mx-[-4px]" />
+                </div>
+                <h1>
+                  79
+                  <span className="text-gray-600 font-thin text-lg ml-1">
+                    per video
+                  </span>
+                </h1>
               </div>
-              <h1>
-                79
-                <span className="text-gray-400 font-thin text-lg ml-1">
-                  per video
-                </span>
-              </h1>
-            </div>
-            <Divider className="my-6 -mx-6" />
-            <div className="flex justify-center">
-              <Button
-                bg="black"
-                type="submit"
-                className="h-auto py-4 px-8 mb-2 rounded-l"
-              >
+            </Box>
+
+            <Divider />
+            <div className="flex justify-center my-4">
+              <Button bg="black" type="submit" className="px-6 rounded-l">
                 {" "}
                 Book a shoot session
               </Button>

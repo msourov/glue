@@ -21,8 +21,7 @@ import {
 } from "@tabler/icons-react";
 import classes from "./NavbarLinksGroup.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { ProfileSection } from "../../../pages/ProfileSection";
+import { ProfileSection } from "../../../pages/User/ProfileSection";
 
 interface IconProps {
   // Add specific prop types here based on the Icon component's documentation
@@ -43,24 +42,15 @@ export function LinksGroup({
   label,
   isActive,
   onClick,
-  link,
 }: LinksGroupProps & { isActive: boolean; onClick: () => void }) {
-  const navigate = useNavigate();
-  const handleClick: () => void = () => {
-    if (link) {
-      navigate(link);
-    }
-    onClick();
-  };
-  // console.log(activeLink);
   return (
     <>
       <UnstyledButton
         className={`${classes.control} ${isActive ? classes.active : ""}`}
-        onClick={handleClick}
+        onClick={onClick}
       >
         <Group justify="space-between" gap={0}>
-          <Box style={{ display: "flex", alignItems: "center" }}>
+          <Box className="flex items-center">
             <ThemeIcon size={30} className="bg-white text-black">
               {/* <Icon style={{ width: rem(18), height: rem(18) }} /> */}
               <Icon className="tabler-icon-size-md" />
@@ -95,7 +85,7 @@ const mockdata = [
       },
       { label: "RSS Feed", icon: IconRss, link: "/rss-feed" },
       {
-        label: "Your Content Drive",
+        label: "Resources",
         icon: IconBrandOnedrive,
         link: "/content-drive",
       },
@@ -121,7 +111,7 @@ const mockdata = [
   {
     title: "Community",
     items: [
-      { label: "Chat", icon: IconMessageFilled, link: "/Chat" },
+      { label: "Club Glue", icon: IconMessageFilled, link: "/Chat" },
       // {
       //   label: "Cool Content",
       //   icon: IconBrandYoutubeFilled,
@@ -151,20 +141,14 @@ interface Group {
   };
 }
 export function Sidebar() {
-  const [activeLink, setActiveLink] = useState<string | null>(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const currentPath = location.pathname;
-
-    setActiveLink(currentPath);
-  }, [location]);
-  console.log(activeLink);
   return (
-    <Box px="lg" py="md" m="0" className="overflow-y-auto h-full flex flex-col">
-      <Box className="flex-grow">
+    <Box px="lg" py="md" className="overflow-y-auto h-[100%] flex flex-col">
+      <Box className="flex-1">
         {mockdata.map((group, index) => (
-          <div key={index} className="mb-4">
+          <div key={index} className="">
             {group.title && (
               <Text className="font-bold text-gray-600 mb-2">
                 {group.title}
@@ -175,20 +159,16 @@ export function Sidebar() {
                 key={item.label}
                 icon={item.icon}
                 label={item.label}
-                isActive={activeLink === item.link}
+                isActive={location.pathname === item.link}
                 link={item.link}
-                onClick={() => {
-                  if (item.link) {
-                    setActiveLink(item.link);
-                  }
-                }}
+                onClick={() => navigate(item.link || "/")}
               />
             ))}
           </div>
         ))}
       </Box>
       <Divider />
-      <Box className="mb-14">
+      <Box className="mb-12">
         <ProfileSection />
       </Box>
     </Box>

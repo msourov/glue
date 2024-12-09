@@ -1,5 +1,5 @@
 import { Box, Card, ScrollArea, Skeleton, Text } from "@mantine/core";
-import api from "../services/api";
+import api from "../../services/api";
 import { useEffect, useState } from "react";
 
 interface FeedItem {

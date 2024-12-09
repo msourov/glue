@@ -2,8 +2,7 @@ import { Box, Text } from "@mantine/core";
 import { Menu, Button } from "@mantine/core";
 // import useAuth from "../../services/auth/useAuth";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import useLocalStorage from "../services/hooks/useLocalStorage";
+import useLocalStorage from "../../services/hooks/useLocalStorage";
 // import useLocalStorage from "../../services/hooks/useLocalStorage";
 
 interface LSData {
@@ -26,19 +25,9 @@ function UserButton() {
     "loggedInUser",
     null
   );
-  const [imageUrl, setImageUrl] = useState("");
-  console.log("LSData", LSData);
-  const uid = (LSData as unknown as LSData)?.uid || "";
-  const [timestamp, setTimestamp] = useState<number>(Date.now());
-  useEffect(() => {
-    const getImage = async () => {
-      setTimestamp(Date.now());
-      setImageUrl(
-        `https://api.glue.pitetris.com/margaret/v1/user/profile/show/no/${uid}?${timestamp}`
-      );
-    };
-    getImage();
-  }, [timestamp]);
+  // const uid = (LSData as unknown as LSData)?.uid || "";
+  // const imageUrl = `https://api.glue.pitetris.com/margaret/v1/user/profile/show/no/${uid}?${Date.now()}`;
+  const imageUrl = "https://avatar.iran.liara.run/public";
 
   return (
     <Menu
@@ -57,19 +46,20 @@ function UserButton() {
             <img
               src={imageUrl}
               alt="user"
-              width={50}
-              height={50}
+              width={40}
+              height={40}
               className="outline-black-5 overflow-hidden"
             />
           </div>
           <div
-            style={{ marginTop: "-1rem", color: "black", marginLeft: "1rem" }}
+            style={{
+              marginTop: "-1rem",
+              color: "black",
+              marginLeft: "1rem",
+              textAlign: "left",
+            }}
           >
-            <Text
-              mt="md"
-              size="sm"
-              className="font-semibold truncate w-32 text-left"
-            >
+            <Text mt="md" size="sm" className="font-semibold truncate w-32">
               {(LSData as unknown as LSData)?.name || "Anonymous"}
             </Text>
             <Text size="xs" color="dimmed" className="truncate w-36">

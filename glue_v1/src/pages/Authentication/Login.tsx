@@ -13,7 +13,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
-import useAuth from "../services/auth/useAuth";
+import useAuth from "../../services/auth/useAuth";
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -30,7 +30,7 @@ type FormDataType = {
 };
 
 export default function Login() {
-  const { login, isLoggedIn } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const {
     register,
@@ -47,7 +47,7 @@ export default function Login() {
     }
   };
 
-  if (isLoggedIn) {
+  if (isAuthenticated) {
     navigate("/", { replace: true });
     return null; // Prevent rendering of the form
   }

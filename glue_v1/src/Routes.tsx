@@ -1,187 +1,208 @@
+import { Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
-import Dashboard from "./pages/Dashboard";
-import Members from "./pages/Members";
-import ContentCalendar from "./pages/ContentCalendar";
-import EventsCalendar from "./pages/EventsCalendar";
-import RSSFeed from "./pages/RSSFeed";
-import Videography from "./pages/Videography";
-import Photography from "./pages/Photography";
-import Editing from "./pages/Editing";
-import GlueAccess from "./pages/GlueAccess";
-import Chat from "./pages/Chat";
-import CoolContent from "./pages/ContentDrive";
-import Events from "./pages/Events";
-import MyMembership from "./pages/MyMembership";
-import ErrorPage from "./pages/ErrorPage";
 import AppLayout from "./AppLayout";
-import Login from "./pages/Login";
+import ErrorPage from "./pages/Authentication/ErrorPage";
+import { Loader } from "@mantine/core";
+
+// Lazy load components
+import {
+  Dashboard,
+  Members,
+  ContentCalendar,
+  EventsCalendar,
+  RSSFeed,
+  Videography,
+  Photography,
+  Editing,
+  GlueAccess,
+  Chat,
+  ContentDrive,
+  MyMembership,
+  UsefulTools,
+  UserProfile,
+  Settings,
+  Login,
+  Signup,
+  ForgotPass,
+  VerifyMail,
+} from "./lazyComponents";
 import { ProtectedRoute } from "./services/auth/ProtectedRoute";
-import UsefulTools from "./pages/UsefulTools";
-import Signup from "./pages/Signup";
-import ForgotPass from "./pages/ForgotPass";
-import VerifyMail from "./pages/VerifyMail";
-import UserProfile from "./pages/UserProfile";
-import ContentDrive from "./pages/ContentDrive";
-import Settings from "./pages/Settings";
+import PublicRoute from "./services/auth/PublicRoute";
+
+const loader = (
+  <div className="flex justify-center items-center">
+    <Loader type="dots" />
+  </div>
+);
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <AppLayout />,
+    element: (
+      <Suspense fallback={loader}>
+        <AppLayout />
+      </Suspense>
+    ),
     errorElement: <ErrorPage />,
     children: [
       {
-        path: "",
-        element: (
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "members",
-        element: (
-          <ProtectedRoute>
-            <Members />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "content-calendar",
-        element: (
-          <ProtectedRoute>
-            <ContentCalendar />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "events-calendar",
-        element: (
-          <ProtectedRoute>
-            <EventsCalendar />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "rss-feed",
-        element: (
-          <ProtectedRoute>
-            <RSSFeed />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "content-drive",
-        element: (
-          <ProtectedRoute>
-            <ContentDrive />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "videography",
-        element: (
-          <ProtectedRoute>
-            <Videography />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "photography",
-        element: (
-          <ProtectedRoute>
-            <Photography />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "editing",
-        element: (
-          <ProtectedRoute>
-            <Editing />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "glue-access",
-        element: (
-          <ProtectedRoute>
-            <GlueAccess />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "chat",
-        element: (
-          <ProtectedRoute>
-            <Chat />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "cool-content",
-        element: (
-          <ProtectedRoute>
-            <CoolContent />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "events",
-        element: (
-          <ProtectedRoute>
-            <Events />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "my-membership",
-        element: (
-          <ProtectedRoute>
-            <MyMembership />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "useful-tools",
-        element: (
-          <ProtectedRoute>
-            <UsefulTools />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "user-profile",
-        element: (
-          <ProtectedRoute>
-            <UserProfile />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "settings",
-        element: (
-          <ProtectedRoute>
-            <Settings />
-          </ProtectedRoute>
-        ),
+        path: "/",
+        element: <ProtectedRoute />,
+        children: [
+          {
+            index: true,
+            element: (
+              <Suspense fallback={loader}>
+                <Dashboard />
+              </Suspense>
+            ),
+          },
+          {
+            path: "members",
+            element: (
+              <Suspense fallback={loader}>
+                <Members />
+              </Suspense>
+            ),
+          },
+          {
+            path: "content-calendar",
+            element: (
+              <Suspense fallback={loader}>
+                <ContentCalendar />
+              </Suspense>
+            ),
+          },
+          {
+            path: "events-calendar",
+            element: (
+              <Suspense fallback={loader}>
+                <EventsCalendar />
+              </Suspense>
+            ),
+          },
+          {
+            path: "rss-feed",
+            element: (
+              <Suspense fallback={loader}>
+                <RSSFeed />
+              </Suspense>
+            ),
+          },
+          {
+            path: "content-drive",
+            element: (
+              <Suspense fallback={loader}>
+                <ContentDrive />
+              </Suspense>
+            ),
+          },
+          {
+            path: "videography",
+            element: (
+              <Suspense fallback={loader}>
+                <Videography />
+              </Suspense>
+            ),
+          },
+          {
+            path: "photography",
+            element: (
+              <Suspense fallback={loader}>
+                <Photography />
+              </Suspense>
+            ),
+          },
+          {
+            path: "editing",
+            element: (
+              <Suspense fallback={loader}>
+                <Editing />
+              </Suspense>
+            ),
+          },
+          {
+            path: "glue-access",
+            element: (
+              <Suspense fallback={loader}>
+                <GlueAccess />
+              </Suspense>
+            ),
+          },
+          {
+            path: "chat",
+            element: (
+              <Suspense fallback={loader}>
+                <Chat />
+              </Suspense>
+            ),
+          },
+          // {
+          //   path: "cool-content",
+          //   element: (
+          //     <ProtectedRoute>
+          //       <Suspense fallback={loader}>
+          //         <CoolContent />
+          //       </Suspense>
+          //     </ProtectedRoute>
+          //   ),
+          // },
+          {
+            path: "my-membership",
+            element: (
+              <Suspense fallback={loader}>
+                <MyMembership />
+              </Suspense>
+            ),
+          },
+          {
+            path: "useful-tools",
+            element: (
+              <Suspense fallback={loader}>
+                <UsefulTools />
+              </Suspense>
+            ),
+          },
+          {
+            path: "user-profile",
+            element: (
+              <Suspense fallback={loader}>
+                <UserProfile />
+              </Suspense>
+            ),
+          },
+          {
+            path: "settings",
+            element: (
+              <Suspense fallback={loader}>
+                <Settings />
+              </Suspense>
+            ),
+          },
+        ],
       },
     ],
   },
   {
     path: "login",
-    element: <Login />,
-  },
-  {
-    path: "verify-mail",
-    element: <VerifyMail />,
-  },
-  {
-    path: "signup",
-    element: <Signup />,
-  },
-  {
-    path: "forgot-password",
-    element: <ForgotPass />,
+    element: <PublicRoute />,
+    children: [
+      {
+        index: true,
+        element: <Login />,
+      },
+      {
+        path: "verify-mail",
+        element: <VerifyMail />,
+      },
+      {
+        path: "signup",
+        element: <Signup />,
+      },
+      {
+        path: "forgot-password",
+        element: <ForgotPass />,
+      },
+    ],
   },
 ]);

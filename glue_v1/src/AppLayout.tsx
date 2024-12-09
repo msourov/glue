@@ -4,15 +4,14 @@ import Topbar from "./components/shared/Topbar";
 
 const AppLayout = () => {
   return (
-    <div className="flex flex-col h-screen overflow-hidden">
+    <div className="flex flex-col h-screen overflow-hidden max-w-[100%]">
       <Topbar />
       <div className="flex flex-1 overflow-hidden">
-        <div className="w-2/8 h-full border-r-2 overflow-hidden">
+        <div className="max-h-full w-[240px]">
           <Sidebar />
         </div>
-
         <div className="flex-1">
-          <div className="content h-full overflow-auto bg-gray-200">
+          <div className="content h-full overflow-y-auto overflow-x-hidden bg-gray-200 ">
             <Outlet />
           </div>
         </div>

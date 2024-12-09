@@ -1,33 +1,17 @@
-import { Navigate } from "react-router-dom";
-import { FC, ReactElement, useEffect, useState } from "react";
+import { Navigate, Outlet } from "react-router-dom";
 import useAuth from "./useAuth";
 
-interface childrenType {
-  children: ReactElement;
-}
-export const ProtectedRoute: FC<childrenType> = ({ children }) => {
-  const { isLoggedIn } = useAuth();
-  const [redirect, setRedirect] = useState(false);
-
-  useEffect(() => {
-    if (!isLoggedIn) {
-      // const timer = setTimeout(() => {
-      setRedirect(true);
-      // }, 0);
-      return;
-    }
-  }, [isLoggedIn]);
-
-  if (redirect) {
-    return <Navigate to="/login" replace />;
+export const ProtectedRoute = () => {
+  const { isAuthenticated } = useAuth();
+  if (isAuthenticated) {
+    return <Outlet />;
   }
-
-  return isLoggedIn ? children : null;
+  return <Navigate to="/login" />;
 };
 
 // export const ProtectedRoute: FC<childrenType> = ({ children }) => {
-//   const { isLoggedIn } = useAuth();
-//   if (!isLoggedIn) {
+//   const { isAuthenticated } = useAuth();
+//   if (!isAuthenticated) {
 //     return <Navigate to="/login" replace />;
 //   }
 

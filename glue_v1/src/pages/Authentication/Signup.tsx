@@ -13,9 +13,9 @@ import {
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
-import useAuth from "../services/auth/useAuth";
-import useLocalStorage from "../services/hooks/useLocalStorage";
-import api from "../services/api";
+import useAuth from "../../services/auth/useAuth";
+import useLocalStorage from "../../services/hooks/useLocalStorage";
+import api from "../../services/api";
 import { useEffect, useState } from "react";
 
 const validationSchema = Yup.object().shape({
@@ -45,7 +45,7 @@ const Signup = () => {
     string | Record<string, unknown>
   >("userSignupData", null);
   const [isVerified, setIsVerified] = useState<boolean>(false);
-  const { signup, sendVerMail, isLoggedIn } = useAuth();
+  const { signup, sendVerMail, isAuthenticated } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const navigate = useNavigate();
   const {
@@ -58,7 +58,7 @@ const Signup = () => {
   console.log(LSData);
   let interval: number;
   useEffect(() => {
-    if (isLoggedIn) {
+    if (isAuthenticated) {
       navigate("/", { replace: true });
     }
   }, []);

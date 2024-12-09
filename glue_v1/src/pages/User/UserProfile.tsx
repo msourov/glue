@@ -4,15 +4,16 @@ import {
   Group,
   Container,
   Button,
-  Divider,
   Modal,
   TextInput,
   Title,
+  Box,
+  PasswordInput,
 } from "@mantine/core";
 
-import useLocalStorage from "../services/hooks/useLocalStorage";
+import useLocalStorage from "../../services/hooks/useLocalStorage";
 import { useEffect, useState } from "react";
-import api from "../services/api";
+import api from "../../services/api";
 import { useForm } from "react-hook-form";
 
 interface UserProfileData {
@@ -36,7 +37,7 @@ const UserProfile = () => {
     null
   );
   const [profileData, setProfileData] = useState<UserProfileData | null>(null);
-  const [imageUrl, setImageUrl] = useState<string>("");
+  // const [imageUrl, setImageUrl] = useState<string>("");
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
   const { uid } = LSData as unknown as LSData;
   const [timestamp, setTimestamp] = useState<number>(Date.now());
@@ -46,9 +47,9 @@ const UserProfile = () => {
     try {
       const profileData = await api().get(`/margaret/v1/user/${uid}`);
       setProfileData(profileData.data.data);
-      setImageUrl(
-        `https://api.glue.pitetris.com/margaret/v1/user/profile/show/no/${uid}?${timestamp}`
-      );
+      // setImageUrl(
+      //   `https://api.glue.pitetris.com/margaret/v1/user/profile/show/no/${uid}?${timestamp}`
+      // );
     } catch (error) {
       console.error(error);
     }
@@ -57,46 +58,86 @@ const UserProfile = () => {
     getProfileData();
   }, [timestamp]);
 
-  const handleModalOpen = () => {
-    setEditModalOpen((prev) => !prev);
-  };
+  // const handleModalOpen = () => {
+  //   setEditModalOpen((prev) => !prev);
+  // };
 
   const handleModalClose = () => {
     setEditModalOpen(false);
     setTimestamp(Date.now());
   };
-
+  const imageUrl = "https://avatar.iran.liara.run/public";
   return (
-    <Container size={"100%"} my={20}>
-      <Card className="p-8 rounded-md shadow-md">
-        <Group className="flex gap-20 align-middle my-10">
+    <Box my={20} className="w-[95%] mx-auto">
+      <Box className="my-4">
+        <Title order={2} fw={600}>
+          My Profile
+        </Title>
+        <Text c="dimmed">Change your information and preferences</Text>
+      </Box>
+      <Card className="rounded-md border shadow-md my-6 px-6">
+        <Box className="gap-8 flex items-center">
           <img
             src={imageUrl}
             alt={profileData?.name}
-            className="w-48 h-48 rounded-full mb-4"
+            className="w-24 h-24 rounded-full"
           />
+          <Box className="flex flex-col gap-4">
+            <Text fw={500}>Profile Picture</Text>
+            <Group>
+              <Button
+                size="compact-md"
+                variant="filled"
+                color="black"
+                className="font-thin"
+              >
+                Upload Image
+              </Button>
+              <Button
+                size="compact-md"
+                variant="outline"
+                color="gray"
+                className="font-thin"
+              >
+                Remove
+              </Button>
+            </Group>
+          </Box>
+        </Box>
 
-          <div className="text-left mb-4">
-            <Text className="font-bold text-2xl">{profileData?.name}</Text>
-            <Divider my="md" />
-            <Text className="text-lg text-gray-600 ">
-              Phone:{" "}
-              <span className="text-black text-xl">{profileData?.phone}</span>
-            </Text>
-            <Text className="text-lg text-gray-600 ">
-              Email:{" "}
-              <span className="text-black text-xl">{profileData?.email}</span>
-            </Text>
-          </div>
-        </Group>
-
-        <Group align="center" gap="md">
-          <Button variant="outline" onClick={handleModalOpen}>
-            Edit Profile
+        <div className="text-left mt-8 mb-4 flex flex-col gap-4">
+          <Group>
+            <TextInput value={profileData?.name} label="Full Name" w={200} />
+            <TextInput
+              value={profileData?.email}
+              label="Email Address"
+              w={200}
+            />
+          </Group>
+          <Group>
+            <PasswordInput value="11111111" label="New Password" w={200} />
+            <PasswordInput value="11111111" label="Confirm Password" w={200} />
+          </Group>
+          <Button
+            variant="filled"
+            color="black"
+            className="w-fit font-thin mt-6"
+          >
+            Change password
           </Button>
-          {/* <Button color="red">Delete Profile</Button> */}
-        </Group>
+        </div>
       </Card>
+      <Box className="w-full py-6 px-6 bg-red-100">
+        <Text mb={"1rem"}>
+          <Text span color="red" fw="bold">
+            Careful!
+          </Text>{" "}
+          This action is irreversible.
+        </Text>
+        <Button variant="filled" className="w-fit font-thin bg-red-700">
+          Delete account
+        </Button>
+      </Box>
       <Modal
         opened={editModalOpen}
         onClose={() => setEditModalOpen(false)}
@@ -111,7 +152,7 @@ const UserProfile = () => {
           <EditProfileForm userData={profileData} onSubmit={handleModalClose} />
         )}
       </Modal>
-    </Container>
+    </Box>
   );
 };
 
@@ -174,8 +215,8 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
   };
 
   return (
-    <Container size="xs" className="mb-10">
-      <Title order={2} mb="md" className="text-center">
+    <Container size="xs" className="mb-8">
+      <Title order={3} mb="sm" className="text-center">
         Edit Profile
       </Title>
       <form onSubmit={handleSubmit(handleUpdateProfile)}>

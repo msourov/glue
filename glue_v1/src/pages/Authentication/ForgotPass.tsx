@@ -6,7 +6,7 @@ import {
   Title,
   Alert,
 } from "@mantine/core";
-import api from "../services/api";
+import api from "../../services/api";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
