@@ -66,11 +66,33 @@ const UserProfile = () => {
     setEditModalOpen(false);
     setTimestamp(Date.now());
   };
-  const imageUrl = "https://avatar.iran.liara.run/public";
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      console.error("No file selected.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("upload_file", file);
+
+    try {
+      await api().post(`/margaret/v1/user/profile/upload/${uid}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setTimestamp(Date.now()); // Refresh profile data after successful upload
+    } catch (error) {
+      console.error("Image upload failed:", error);
+    }
+  };
+
+  const imageUrl = `https://api.glue.pitetris.com/margaret/v1/user/profile/show/no/${uid}?${timestamp}`;
+
   return (
     <Box my={20} className="w-[95%] mx-auto">
       <Box className="my-4">
-        <Title order={2} fw={600}>
+        <Title order={2} fw={500}>
           My Profile
         </Title>
         <Text c="dimmed">Change your information and preferences</Text>
@@ -82,19 +104,29 @@ const UserProfile = () => {
             alt={profileData?.name}
             className="w-24 h-24 rounded-full"
           />
-          <Box className="flex flex-col gap-4">
-            <Text fw={500}>Profile Picture</Text>
+          <Box className="flex flex-col gap-2">
+            <Text fw={500} c="dimmed">
+              Profile Picture
+            </Text>
             <Group>
+              <input
+                type="file"
+                accept="image/*"
+                id="fileInput"
+                style={{ display: "none" }}
+                onChange={(e) => handleImageUpload(e)}
+              />
               <Button
-                size="compact-md"
+                size="compact-sm"
                 variant="filled"
                 color="black"
                 className="font-thin"
+                onClick={() => document.getElementById("fileInput")?.click()}
               >
                 Upload Image
               </Button>
               <Button
-                size="compact-md"
+                size="compact-sm"
                 variant="outline"
                 color="gray"
                 className="font-thin"
@@ -107,21 +139,49 @@ const UserProfile = () => {
 
         <div className="text-left mt-8 mb-4 flex flex-col gap-4">
           <Group>
-            <TextInput value={profileData?.name} label="Full Name" w={200} />
             <TextInput
-              value={profileData?.email}
-              label="Email Address"
-              w={200}
+              value={profileData?.name || ""}
+              label={
+                <Text size="sm" c="dimmed">
+                  Full Name
+                </Text>
+              }
+              w={220}
+            />
+            <TextInput
+              value={profileData?.email || ""}
+              label={
+                <Text size="sm" c="dimmed">
+                  Email Address
+                </Text>
+              }
+              w={220}
             />
           </Group>
           <Group>
-            <PasswordInput value="11111111" label="New Password" w={200} />
-            <PasswordInput value="11111111" label="Confirm Password" w={200} />
+            <PasswordInput
+              value="11111111"
+              label={
+                <Text size="sm" c="dimmed">
+                  New Password
+                </Text>
+              }
+              w={220}
+            />
+            <PasswordInput
+              value="11111111"
+              label={
+                <Text size="sm" c="dimmed">
+                  Confirm Password
+                </Text>
+              }
+              w={220}
+            />
           </Group>
           <Button
             variant="filled"
             color="black"
-            className="w-fit font-thin mt-6"
+            className="w-fit font-thin mt-4"
           >
             Change password
           </Button>

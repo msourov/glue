@@ -33,24 +33,25 @@ const Videos: FC<VideoProps> = ({ title }) => {
     }
   };
   return (
-    <Box className="relative max-w-[100%] p-4 pb-8 px-8 bg-white rounded-lg">
+    <Box className="relative max-w-[90%] py-2 pb-8 px-8 bg-white rounded-lg">
       {title && (
-        <Text mb={12} fw={500} size="lg">
+        <Text mb={8} fw={500} size="lg" c="yellow">
           {title}
         </Text>
       )}
       <ScrollArea type="never" viewportRef={viewport}>
-        <Box className="gap-4 flex overflow-x-scroll scrollbar-hidden">
+        <Box className="flex overflow-x-scroll scrollbar-hidden max-w-full">
           {videoIds.map((id) => (
-            <iframe
-              key={id}
-              src={`${baseEmbedUrl}?id=${id}&hide_author=1&utm_campaign=tt4d_open_api&utm_source=awbx37vxswqcvsf6`}
-              width="240"
-              height="400"
-              allowFullScreen
-              title={`TikTok Video ${id}`}
-              style={{ border: "none" }}
-            ></iframe>
+            <Box key={id} className="min-w-[220px] max-w-[240px] flex-shrink-0">
+              <iframe
+                src={`${baseEmbedUrl}?id=${id}&hide_author=1&utm_campaign=tt4d_open_api&utm_source=awbx37vxswqcvsf6`}
+                width="90%"
+                height="380"
+                allowFullScreen
+                title={`TikTok Video ${id}`}
+                style={{ border: "none" }}
+              ></iframe>
+            </Box>
           ))}
         </Box>
       </ScrollArea>

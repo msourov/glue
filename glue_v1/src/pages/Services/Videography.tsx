@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Title } from "@mantine/core";
+import { Box, Button, Divider, Text, Title } from "@mantine/core";
 import { IconCheck, IconCurrencyPound } from "@tabler/icons-react";
 import Videos from "../../components/FileRender/Videos";
 
@@ -10,7 +10,9 @@ const Videography = () => {
       </Title>
       <div className="flex flex-wrap justify-evenly w-[95%] mx-auto">
         <Box className="flex flex-col w-[70%] p-2 rounded-xl">
-          <h2 className="font-medium text-2xl">Content shoot session</h2>
+          <Text className="font-medium text-2xl text-blue-800">
+            Content shoot session
+          </Text>
           <Box className="flex flex-wrap mt-4 bg-white p-4 rounded-xl">
             <p>
               Our content creators understand creative and culture. Create
@@ -50,21 +52,23 @@ const Videography = () => {
               </li>
             </p>
           </Box>
-          <Box className="bg-white py-6 rounded-xl overflow-x-hidden">
-            <h1 className="text-lg font-semibold mx-6">Recent Work</h1>
+          <Box className="bg-white py-2 rounded-xl overflow-x-hidden">
+            <Text c="yellow" className="text-lg font-semibold mx-6">
+              Recent Work
+            </Text>
             <Videos title="" />
           </Box>
         </Box>
         <Box className="flex w-[25%] p-2 rounded-xl flex-col">
-          <h1 className="font-medium text-2xl">Book the service</h1>
+          <h1 className="font-medium text-2xl text-blue-800">
+            Book the service
+          </h1>
           <Box className="bg-white rounded-xl mt-4">
             <Box
               style={{
                 background: "linear-gradient(90deg, #fcd34d, #fbbf24, #d97706)",
-                // borderRadius: "12px",
                 color: "black",
                 padding: "1rem 1.5rem",
-                boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
               }}
             >
               <h1 className="font-bold">Ultra member</h1>

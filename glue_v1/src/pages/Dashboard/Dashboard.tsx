@@ -36,7 +36,7 @@ const Dashboard = () => {
   // }, []);
 
   return (
-    <div className="w-[95%] mx-auto">
+    <div className="w-[90%] mx-auto">
       <div className="w-fit">
         <h1 className="text-2xl my-2 mt-4">
           Welcome back,{" "}
@@ -44,12 +44,12 @@ const Dashboard = () => {
         </h1>
         <Text c="dimmed">Have a look at the newest trends</Text>
       </div>
-      <div className="flex flex-row gap-4 justify-between">
-        <Box className="flex flex-1 flex-col gap-4 w-[70%] my-8">
+      <div className="flex flex-col lg:flex-row justify-between">
+        <Box className="flex flex-col gap-4 sm:w-full md:w-[70%] my-8">
           <Videos title={"Food & Beverages"} />
           <Videos title={"Beauty"} />
         </Box>
-        <Box className="w-[30%] px-2 rounded-lg my-8 pt-2 pb-4 bg-white h-fit">
+        <Box className=" px-2 rounded-lg my-8 pt-2 pb-4 bg-white h-fit">
           <Text
             c="dimmed"
             className="text-xl text-center pb-2 mb-4 border-b-2 border-blue-300"
