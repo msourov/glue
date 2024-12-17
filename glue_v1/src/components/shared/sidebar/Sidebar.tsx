@@ -145,8 +145,8 @@ export function Sidebar() {
   const navigate = useNavigate();
 
   return (
-    <Box px="lg" py="md" className="overflow-y-auto h-[100%] flex flex-col">
-      <Box className="flex-1">
+    <Box py="md" className="overflow-y-auto h-[100%] flex flex-col">
+      <Box className="flex-1 px-4">
         {mockdata.map((group, index) => (
           <div key={index} className="">
             {group.title && (
@@ -168,7 +168,7 @@ export function Sidebar() {
         ))}
       </Box>
       <Divider />
-      <Box className="mb-12">
+      <Box className="mb-12 flex justify-center">
         <ProfileSection />
       </Box>
     </Box>

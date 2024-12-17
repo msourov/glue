@@ -6,6 +6,8 @@ import {
   SimpleGrid,
   Text,
   Title,
+  useComputedColorScheme,
+  useMantineColorScheme,
 } from "@mantine/core";
 
 const statisticsData = [
@@ -28,21 +30,27 @@ const statisticsData = [
 ];
 
 const Settings = () => {
+  const { colorScheme, setColorScheme } = useMantineColorScheme();
+  const computedColorScheme = useComputedColorScheme("light");
+
   return (
-    <div className=" flex flex-col gap-4 md:gap-8 mx-auto max-w-[90%] my-12">
+    <div className="flex flex-col gap-6 md:gap-10 mx-auto max-w-[90%] my-12">
       <Box>
         <Title order={3}>Settings</Title>
         <p className="text-gray-500">Change your information and preferences</p>
       </Box>
       <Box>
-        <Title order={3} fw={500} mb={16}>
+        <Title order={3} fw={500} mb={10}>
           Theme
         </Title>
         <Select
           size="sm"
           w="200px"
           placeholder="Select a theme"
-          defaultValue="light"
+          defaultValue={colorScheme}
+          onChange={() =>
+            setColorScheme(computedColorScheme === "dark" ? "light" : "dark")
+          }
           data={[
             { value: "light", label: "Light" },
             { value: "dark", label: "Dark" },
@@ -51,20 +59,29 @@ const Settings = () => {
       </Box>
       {/* <div className="flex flex-row max-w-[100%] "> */}
       <Box>
-        <Title order={3} fw={500} mb={16}>
+        <Title order={3} fw={500} mb={10}>
           Manage your plan
         </Title>
-        <Box className="flex flex-col p-6 bg-white gap-2">
+        <Box
+          className={`flex flex-col p-6 gap-2 ${
+            colorScheme === "light" ? "bg-white" : "border"
+          }`}
+        >
           <Text c="blue" className="text-lg font-medium">
             Pro Membership
           </Text>
-          <Button variant="light" color="black" size="sm" className="w-fit">
+          <Button
+            variant="light"
+            color={`${colorScheme === "light" ? "black" : "gray"}`}
+            size="sm"
+            className="w-fit"
+          >
             Change plan
           </Button>
         </Box>
       </Box>
       <Box>
-        <Title order={3} fw={500} mb={16}>
+        <Title order={3} fw={500} mb={10}>
           Notifications
         </Title>
         <Checkbox
@@ -74,12 +91,16 @@ const Settings = () => {
         />
       </Box>
       <Box>
-        <Title order={3} fw={500} mb={16}>
+        <Title order={3} fw={500} mb={10}>
           Services statistics
         </Title>
         <SimpleGrid cols={{ base: 2, md: 3, lg: 4 }}>
           {statisticsData.map((item) => (
-            <Box className="bg-white p-4 text-center">
+            <Box
+              className={`p-4 text-center ${
+                colorScheme === "light" ? "bg-white" : "border"
+              }`}
+            >
               <Text c="dimmed">{item.title}</Text>
               <Text fw={700}>{item.quantity}</Text>
             </Box>

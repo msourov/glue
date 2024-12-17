@@ -1,4 +1,10 @@
-import { ActionIcon, Box, ScrollArea, Text } from "@mantine/core";
+import {
+  ActionIcon,
+  Box,
+  ScrollArea,
+  Text,
+  useMantineColorScheme,
+} from "@mantine/core";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import { FC, useRef } from "react";
 
@@ -7,6 +13,7 @@ interface VideoProps {
 }
 
 const Videos: FC<VideoProps> = ({ title }) => {
+  const { colorScheme } = useMantineColorScheme();
   const videoIds = [
     "7238998697961458971",
     "7402971142346116384",
@@ -33,7 +40,11 @@ const Videos: FC<VideoProps> = ({ title }) => {
     }
   };
   return (
-    <Box className="relative max-w-[90%] py-2 pb-8 px-8 bg-white rounded-lg">
+    <Box
+      className={`relative max-w-[90%] py-2 pb-6 px-8 rounded-lg border border-white ${
+        colorScheme === "light" ? "bg-gray-100" : "border"
+      }`}
+    >
       {title && (
         <Text mb={8} fw={500} size="lg" c="yellow">
           {title}

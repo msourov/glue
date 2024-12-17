@@ -1,9 +1,8 @@
-import { Box, Text } from "@mantine/core";
+import { Box, Text, useMantineColorScheme } from "@mantine/core";
 import { Menu, Button } from "@mantine/core";
-// import useAuth from "../../services/auth/useAuth";
 import { useNavigate } from "react-router-dom";
 import useLocalStorage from "../../services/hooks/useLocalStorage";
-// import useLocalStorage from "../../services/hooks/useLocalStorage";
+import { useState } from "react";
 
 interface LSData {
   name: string;
@@ -13,7 +12,7 @@ interface LSData {
 
 export function ProfileSection() {
   return (
-    <Box className="profile-section fixed w-fit bg-white text-center py-4 z-10 flex items-center justify-center gap-2">
+    <Box className="profile-section fixed w-fit text-center py-4 z-10 gap-2">
       <UserButton />
     </Box>
   );
@@ -25,9 +24,10 @@ function UserButton() {
     "loggedInUser",
     null
   );
-  // const uid = (LSData as unknown as LSData)?.uid || "";
-  // const imageUrl = `https://api.glue.pitetris.com/margaret/v1/user/profile/show/no/${uid}?${Date.now()}`;
-  const imageUrl = "https://avatar.iran.liara.run/public";
+  const [timestamp] = useState<number>(Date.now());
+  const { colorScheme } = useMantineColorScheme();
+  const { uid } = LSData as unknown as LSData;
+  const imageUrl = `https://api.glue.pitetris.com/margaret/v1/user/profile/show/no/${uid}?${timestamp}`;
 
   return (
     <Menu
@@ -42,13 +42,12 @@ function UserButton() {
           className="hover:bg-transparent hover:cursor-pointer"
           onClick={() => navigate("/user-profile")}
         >
-          <div className="rounded-full overflow-hidden">
+          <div className="flex items-center justify-center">
+            {/* Image styling */}
             <img
               src={imageUrl}
               alt="user"
-              width={40}
-              height={40}
-              className="outline-black-5 overflow-hidden"
+              className="w-10 h-10 rounded-full object-cover" // Updated image size and rounded corners
             />
           </div>
           <div
@@ -59,7 +58,13 @@ function UserButton() {
               textAlign: "left",
             }}
           >
-            <Text mt="md" size="sm" className="font-semibold truncate w-32">
+            <Text
+              mt="md"
+              size="sm"
+              className={`font-semibold truncate w-32 ${
+                colorScheme === "light" ? "" : "text-white"
+              }`}
+            >
               {(LSData as unknown as LSData)?.name || "Anonymous"}
             </Text>
             <Text size="xs" color="dimmed" className="truncate w-36">

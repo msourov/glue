@@ -15,6 +15,10 @@ import useLocalStorage from "../../services/hooks/useLocalStorage";
 import { useEffect, useState } from "react";
 import api from "../../services/api";
 import { useForm } from "react-hook-form";
+import useAuth from "../../services/auth/useAuth";
+import { AxiosError } from "axios";
+import { notifications } from "@mantine/notifications";
+import { IconX } from "@tabler/icons-react";
 
 interface UserProfileData {
   uid: string;
@@ -31,36 +35,54 @@ interface EditProfileFormProps {
   onSubmit: () => void;
 }
 
+interface AxiosErrorResponse {
+  detail?: string;
+}
+
+interface PasswordChangeFormData {
+  oldPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
 const UserProfile = () => {
+  const { logout } = useAuth();
   const [LSData] = useLocalStorage<string | Record<string, unknown>>(
     "loggedInUser",
     null
   );
   const [profileData, setProfileData] = useState<UserProfileData | null>(null);
-  // const [imageUrl, setImageUrl] = useState<string>("");
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
   const { uid } = LSData as unknown as LSData;
   const [timestamp, setTimestamp] = useState<number>(Date.now());
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<PasswordChangeFormData>();
 
   const getProfileData = async () => {
     if (!uid) return;
     try {
       const profileData = await api().get(`/margaret/v1/user/${uid}`);
       setProfileData(profileData.data.data);
-      // setImageUrl(
-      //   `https://api.glue.pitetris.com/margaret/v1/user/profile/show/no/${uid}?${timestamp}`
-      // );
     } catch (error) {
-      console.error(error);
+      const err = error as AxiosError;
+      if (err.response?.status === 401) {
+        logout();
+      } else {
+        console.error("Network error or no response received.");
+      }
+      const errorData = err.response?.data as AxiosErrorResponse;
+      console.log(errorData?.detail);
+      console.error(err);
     }
   };
+
   useEffect(() => {
     getProfileData();
-  }, [timestamp]);
-
-  // const handleModalOpen = () => {
-  //   setEditModalOpen((prev) => !prev);
-  // };
+  }, []);
 
   const handleModalClose = () => {
     setEditModalOpen(false);
@@ -87,6 +109,68 @@ const UserProfile = () => {
     }
   };
 
+  const handleRemoveImage = async () => {
+    try {
+      await api().post(`/margaret/v1/user/profile/remove/${uid}`);
+      setTimestamp(Date.now()); // Refresh profile data to remove the image
+    } catch (error) {
+      console.error("Failed to remove image:", error);
+    }
+  };
+
+  const handlePasswordChange = async (data: {
+    oldPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+  }) => {
+    const { oldPassword, newPassword, confirmPassword } = data;
+    if (newPassword !== confirmPassword) {
+      notifications.show({
+        id: "password-change-error",
+        position: "bottom-right",
+        color: "red",
+        title: "Error",
+        message: "Passwords do not match.",
+        icon: <IconX />,
+        autoClose: 5000,
+        withCloseButton: true,
+      });
+      return;
+    }
+
+    try {
+      const response = await api().put(
+        "/margaret/v1/user/self/change-password",
+        { uid, old_password: oldPassword, new_password: newPassword }
+      );
+      if (response.status === 201) {
+        notifications.show({
+          id: "password-change-success",
+          position: "bottom-right",
+          color: "green",
+          title: "Success",
+          message: response?.data?.message || "Password changed successfully!",
+          autoClose: 5000,
+          withCloseButton: true,
+        });
+      }
+    } catch (error) {
+      const err = error as AxiosError;
+      const errorData = err.response?.data as AxiosErrorResponse;
+      notifications.show({
+        id: "password-change-error",
+        position: "bottom-right",
+        color: "red",
+        title: "Error",
+        message:
+          errorData?.detail || "Failed to change password. Please try again.",
+        icon: <IconX />,
+        autoClose: 5000,
+        withCloseButton: true,
+      });
+    }
+  };
+
   const imageUrl = `https://api.glue.pitetris.com/margaret/v1/user/profile/show/no/${uid}?${timestamp}`;
 
   return (
@@ -102,7 +186,8 @@ const UserProfile = () => {
           <img
             src={imageUrl}
             alt={profileData?.name}
-            className="w-24 h-24 rounded-full"
+            className="w-24 h-24 rounded-full object-cover"
+            style={{ maxWidth: "100%", maxHeight: "100%" }}
           />
           <Box className="flex flex-col gap-2">
             <Text fw={500} c="dimmed">
@@ -130,6 +215,7 @@ const UserProfile = () => {
                 variant="outline"
                 color="gray"
                 className="font-thin"
+                onClick={handleRemoveImage}
               >
                 Remove
               </Button>
@@ -159,32 +245,66 @@ const UserProfile = () => {
             />
           </Group>
           <Group>
-            <PasswordInput
-              value="11111111"
-              label={
-                <Text size="sm" c="dimmed">
-                  New Password
-                </Text>
-              }
-              w={220}
-            />
-            <PasswordInput
-              value="11111111"
-              label={
-                <Text size="sm" c="dimmed">
-                  Confirm Password
-                </Text>
-              }
-              w={220}
-            />
+            <form onSubmit={handleSubmit(handlePasswordChange)}>
+              <Group>
+                <PasswordInput
+                  {...register("oldPassword", {
+                    required: "Old password is required",
+                    minLength: {
+                      value: 8,
+                      message: "Password should be at least 8 characters",
+                    },
+                  })}
+                  label={
+                    <Text size="sm" c="dimmed">
+                      Old Password
+                    </Text>
+                  }
+                  w={220}
+                  error={errors.newPassword?.message}
+                  placeholder="********"
+                />
+                <PasswordInput
+                  {...register("newPassword", {
+                    required: "New password is required",
+                    minLength: {
+                      value: 8,
+                      message: "Password should be at least 8 characters",
+                    },
+                  })}
+                  label={
+                    <Text size="sm" c="dimmed">
+                      New Password
+                    </Text>
+                  }
+                  w={220}
+                  error={errors.newPassword?.message}
+                  placeholder="********"
+                />
+                <PasswordInput
+                  {...register("confirmPassword", {
+                    required: "Please confirm your password",
+                  })}
+                  label={
+                    <Text size="sm" c="dimmed">
+                      Confirm New Password
+                    </Text>
+                  }
+                  w={220}
+                  error={errors.confirmPassword?.message}
+                  placeholder="********"
+                />
+              </Group>
+              <Button
+                variant="filled"
+                color="black"
+                className="w-fit font-thin mt-4"
+                type="submit"
+              >
+                Change password
+              </Button>
+            </form>
           </Group>
-          <Button
-            variant="filled"
-            color="black"
-            className="w-fit font-thin mt-4"
-          >
-            Change password
-          </Button>
         </div>
       </Card>
       <Box className="w-full py-6 px-6 bg-red-100">
@@ -201,7 +321,6 @@ const UserProfile = () => {
       <Modal
         opened={editModalOpen}
         onClose={() => setEditModalOpen(false)}
-        // title="Edit Profile"
         centered
         overlayProps={{
           backgroundOpacity: 0.55,
